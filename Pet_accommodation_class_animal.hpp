@@ -27,7 +27,11 @@ public:
       return animal_name_;
     }
 
-    friend istream& operator>>(istream &ti, animal& temp){
+    void rename(string& new_animal_name) {
+      animal_name_ = new_animal_name;
+    }
+    
+      friend istream &operator>>(istream &ti, animal &temp) {
       string t;
       int n, y;
       if(ti >> t >> n >> y){

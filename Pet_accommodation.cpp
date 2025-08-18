@@ -4,7 +4,7 @@
 #include <fstream>
 #include "Pet_accommodation_class_animal.hpp"
 
-using std::cout, std::cin, std::vector, std::string, std::ifstream, std::ofstream, std::to_string;
+using std::cout, std::cin, std::vector, std::string, std::ifstream, std::ofstream;
 int panel() {
   cout  << "\t开始菜单\n"
         << "----------------------\n"
@@ -23,8 +23,9 @@ void check(const vector<animal>& p) {
     return;
   } 
   for(int i = 0;i < p.size();++i){
-    cout << "[" << i + 1 << "]" << "名字:" << p[i].name() << "饱食度" 
-    << p[i].satiety() << "心情:" << p[i].mood() << '\n';
+    cout << "[" << i + 1 << "]" << '\t' 
+    << "名字:" << p[i].name() << "  " << "饱食度:"
+    << p[i].satiety() << "  " << "心情:" << p[i].mood() << '\n';
   }
 } // 列举宠物
 
@@ -41,22 +42,21 @@ void save(vector<animal> &temp) {
   fout << i;
 } // 写入至animal.txt
 
-string feed_animal(animal &p, int n) { 
-  string feed_animal_temp = "饱食度+";
-  feed_animal_temp += to_string(n);
-  feed_animal_temp += "\t剩余：";
-  feed_animal_temp += to_string(p.feed(n));
-  return feed_animal_temp;
+int feed_animal(animal &p, int n) { 
+  return p.feed(n);
 }// 宠物吃饭
 
-string play_animal(animal &p, int n) {
-  string temp = "心情+";
-  temp += to_string(n);
-  temp += "\t剩余：";
-  temp += to_string(p.make_happy(n));
-  return temp;
+int play_animal(animal &p, int n) {
+  return p.make_happy(n);
 } // 宠物开心
 
+void animal_erase(int erase_umber, vector<animal>& erase_animal) {
+  erase_animal.erase(erase_animal.begin() + erase_umber - 1);
+} // 删除宠物
+
+void animal_rename(animal &rename_animal, string &new_name) {
+  rename_animal.rename(new_name);
+}
 int main() {
   vector<animal> animal_number;
   load(animal_number);
@@ -74,11 +74,13 @@ int main() {
           << "---------------------\n"
           << "\t投喂(F)\n"
           << "\t玩耍(K)\n"
+          << "\t弃养(P)\n"
+          << "\t改名(L)\n"
           << "\t否则退出\n"
           << "提示：请输字符：\n";
           string temp;
           cin >> temp;
-          if(temp == "F" || temp == "K")
+          if(temp == "F" || temp == "K" || temp == "P" || temp == "L")
           {
             int n;
             cout << "请输入序号:";
@@ -86,13 +88,23 @@ int main() {
             cin >> n;
             if(n > animal_number.size() - 1) {
               cout << "无效";
+            } else if (temp == "F") {
+              cout << "饱食度 +" << n << "剩余："
+                   << feed_animal(animal_number[n], 2);
+            } else if (temp == "K") {
+              cout << "心情 +" << n << "剩余：" 
+              << play_animal(animal_number[n], 2);
+            } else if(temp == "P") {
+              animal_erase(n, animal_number);
+              cout << "成功\n";
+            } else {
+              cout << "改为什么名字呢？\n";
+              cin >> temp;
+              animal_rename(animal_number[n], temp);
+              cout << "成功\n" << "它有一个新名字了：" << animal_number[n].name() << '\n';
             }
-            else if(temp == "F") {
-              cout << feed_animal(animal_number[n], 2) << '\n';
-            }
-            else if(temp == "K") {
-              cout << play_animal(animal_number[n], 2);
-            }
+            check(animal_number);
+            cin.ignore();
           }
           else
           {
